@@ -10,7 +10,7 @@ const packetSchema = {
 
   // Patient demographics
   patient_full_name: { type: "string", required: true },
-  patient_date_of_birth: { type: "string", required: true }, // accepts any format; normalized in logic layer
+  patient_date_of_birth: { type: "string", required: true }, // accepts ANY format
   patient_address: { type: "string", required: false },
   patient_phone_numbers: { type: "string", required: false }, // home / cell / work
   patient_email: { type: "string", required: false },
