@@ -29,19 +29,15 @@ app.post("/intake", (req, res) => {
     return res.status(404).json({ error: "Session not found" });
   }
 
-  // Store answer
   session.answers.push(answer_text);
 
-  res.json({
-    message: "Answer received."
-  });
+  res.json({ message: "Answer received." });
 });
 
-// Stop session and receive full packet from frontend
+// Stop session and receive full packet
 app.post("/stop", (req, res) => {
   const packet = req.body;
 
-  // Validate packet structure
   const validation = packetSchema.safeParse(packet);
   if (!validation.success) {
     return res.status(400).json({
@@ -50,7 +46,6 @@ app.post("/stop", (req, res) => {
     });
   }
 
-  // Store final packet
   sessionStore.saveFinalPacket(packet.session_id, packet);
 
   res.json({
