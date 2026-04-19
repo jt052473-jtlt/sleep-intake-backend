@@ -179,4 +179,52 @@ app.post("/intake", async (req, res) => {
     });
   } catch (e) {
     console.error("/intake error:", e);
-    return res.status(500).
+    return res.status(500).json({ error: "Failed to process intake answer." });
+  }
+});
+
+// -------------------------
+// STOP SESSION
+// -------------------------
+app.post("/stop", (req, res) => {
+  try {
+    const { session_id } = req.body || {};
+
+    if (!session_id) {
+      return res.status(400).json({ error: "session_id is required." });
+    }
+
+    const session = sessions.get(session_id);
+    if (!session) {
+      return res.status(404).json({ error: "Session not found." });
+    }
+
+    const human_summary = buildHumanSummary(session.data);
+
+    return res.json({
+      session_id,
+      mode: session.mode,
+      status: "stopped",
+      message: "We’ve stopped the interview and summarized what we have so far.",
+      data_json: session.data,
+      human_summary
+    });
+  } catch (e) {
+    console.error("/stop error:", e);
+    return res.status(500).json({ error: "Failed to stop session." });
+  }
+});
+
+// -------------------------
+// ROOT
+// -------------------------
+app.get("/", (req, res) => {
+  res.send("Sleep intake backend is running.");
+});
+
+// -------------------------
+// START SERVER
+// -------------------------
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
