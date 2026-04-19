@@ -3,8 +3,11 @@ export const initialPacketData = {
   patient_full_name: null,
   patient_date_of_birth: null,
   patient_address: null,
-  patient_phone_numbers: null,
-  patient_email: null,
+
+  // These match Groq output
+  patient_contact_phone: null,
+  patient_contact_email: null,
+
   emergency_contact: null,
   referring_physician: null,
   primary_physician: null,
@@ -19,6 +22,7 @@ export const initialPacketData = {
   additional_sleep_comments: null,
 
   // Sleep habits
+  sleep_habits_summary: null,
   usual_bedtime_workdays: null,
   usual_bedtime_days_off: null,
   sleep_latency_and_awakenings: null,
@@ -33,12 +37,12 @@ export const initialPacketData = {
   neck_size_inches: null,
 
   // Medical history
+  medical_history_summary: null,
   cardiac_respiratory_endocrine_history: null,
   neurologic_mental_ent_history: null,
   other_medical_conditions: null,
   family_history_summary: null,
   surgical_history: null,
-  medical_history_summary: null,
 
   // Medications
   medications_list: null,
@@ -61,8 +65,8 @@ Patient:
 - Name: ${d.patient_full_name || "N/A"}
 - Date of Birth: ${d.patient_date_of_birth || "N/A"}
 - Address: ${d.patient_address || "N/A"}
-- Phone(s): ${d.patient_phone_numbers || "N/A"}
-- Email: ${d.patient_email || "N/A"}
+- Phone(s): ${d.patient_contact_phone || "N/A"}
+- Email: ${d.patient_contact_email || "N/A"}
 - Emergency Contact: ${d.emergency_contact || "N/A"}
 
 Physicians:
@@ -72,12 +76,11 @@ Physicians:
 Sleep History:
 - Primary Sleep Complaint: ${d.primary_sleep_complaint || "N/A"}
 - Onset of Problem: ${d.sleep_problem_onset || "N/A"}
-- Previous Sleep Studies/Treatments: ${
-    d.previous_sleep_studies_or_treatments || "N/A"
-  }
+- Previous Sleep Studies/Treatments: ${d.previous_sleep_studies_or_treatments || "N/A"}
 - Additional Comments: ${d.additional_sleep_comments || "N/A"}
 
 Sleep Habits:
+- Sleep Habits Summary: ${d.sleep_habits_summary || "N/A"}
 - Workday Schedule: ${d.usual_bedtime_workdays || "N/A"}
 - Days Off Schedule: ${d.usual_bedtime_days_off || "N/A"}
 - Sleep Latency/Awakenings: ${d.sleep_latency_and_awakenings || "N/A"}
@@ -88,37 +91,29 @@ Lifestyle:
 - Caffeine/Alcohol Use: ${d.caffeine_and_alcohol_use || "N/A"}
 - Tobacco Use: ${d.tobacco_use_details || "N/A"}
 - Home Oxygen/CPAP Use: ${d.home_oxygen_and_cpap_use || "N/A"}
-- Nasal Breathing/Claustrophobia: ${
-    d.nasal_breathing_and_claustrophobia || "N/A"
-  }
+- Nasal Breathing/Claustrophobia: ${d.nasal_breathing_and_claustrophobia || "N/A"}
 - Neck Size (inches): ${d.neck_size_inches || "N/A"}
 
 Medical History:
-- Cardiac/Respiratory/Endocrine: ${
-    d.cardiac_respiratory_endocrine_history || "N/A"
-  }
+- Overall Medical History Summary: ${d.medical_history_summary || "N/A"}
+- Cardiac/Respiratory/Endocrine: ${d.cardiac_respiratory_endocrine_history || "N/A"}
 - Neurologic/Mental/ENT: ${d.neurologic_mental_ent_history || "N/A"}
 - Other Medical Conditions: ${d.other_medical_conditions || "N/A"}
 - Family History: ${d.family_history_summary || "N/A"}
 - Surgical History: ${d.surgical_history || "N/A"}
-- Overall Medical History Summary: ${d.medical_history_summary || "N/A"}
 
 Medications:
 - Medications List: ${d.medications_list || "N/A"}
 
 Symptoms / Review of Systems:
 - Sleep Symptoms: ${d.sleep_symptoms_summary || "N/A"}
-- General Review of Systems: ${
-    d.general_review_of_systems_summary || "N/A"
-  }
+- General Review of Systems: ${d.general_review_of_systems_summary || "N/A"}
 
 Epworth:
 - Epworth Details: ${d.epworth_details || "N/A"}
 - Epworth Total Score: ${d.epworth_total_score || "N/A"}
 
 HIPAA / Consents:
-- HIPAA Consent Acknowledgment: ${
-    d.hipaa_consent_acknowledgment || "N/A"
-  }
+- HIPAA Consent Acknowledgment: ${d.hipaa_consent_acknowledgment || "N/A"}
 `.trim();
 }
