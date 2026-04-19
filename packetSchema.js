@@ -1,119 +1,90 @@
-export const initialPacketData = {
-  // Demographics
-  patient_full_name: null,
-  patient_date_of_birth: null,
-  patient_address: null,
+// packetSchema.js
+// Canonical schema for the Sleep Intake packet
 
-  // These match Groq output
-  patient_contact_phone: null,
-  patient_contact_email: null,
+const packetSchema = {
+  // Meta / mode
+  mode: { type: "string", required: true }, // "quick" or "full"
 
-  emergency_contact: null,
-  referring_physician: null,
-  primary_physician: null,
+  // HIPAA / consents
+  hipaa_consent_acknowledgment: { type: "string", required: false },
 
-  // Consents
-  hipaa_consent_acknowledgment: null,
+  // Patient demographics
+  patient_full_name: { type: "string", required: true },
+  patient_date_of_birth: { type: "string", required: true }, // accepts any format; normalized in logic layer
+  patient_address: { type: "string", required: false },
+  patient_phone_numbers: { type: "string", required: false }, // home / cell / work
+  patient_email: { type: "string", required: false },
+  emergency_contact: { type: "string", required: false },
+
+  // Physicians
+  referring_physician: { type: "string", required: false },
+  primary_physician: { type: "string", required: false },
 
   // Sleep history
-  primary_sleep_complaint: null,
-  sleep_problem_onset: null,
-  previous_sleep_studies_or_treatments: null,
-  additional_sleep_comments: null,
+  primary_sleep_complaint: { type: "string", required: true },
+  sleep_problem_onset: { type: "string", required: false },
+  previous_sleep_studies_or_treatments: { type: "string", required: false },
+  additional_sleep_comments: { type: "string", required: false },
 
   // Sleep habits
-  sleep_habits_summary: null,
-  usual_bedtime_workdays: null,
-  usual_bedtime_days_off: null,
-  sleep_latency_and_awakenings: null,
-  work_shift_type: null,
+  sleep_habits_summary: { type: "string", required: false }, // quick mode summary
+  usual_bedtime_workdays: { type: "string", required: false },
+  usual_bedtime_days_off: { type: "string", required: false },
+  sleep_latency_and_awakenings: { type: "string", required: false },
+  work_shift_type: { type: "string", required: false },
 
   // Lifestyle
-  lifestyle_factors_summary: null,
-  caffeine_and_alcohol_use: null,
-  tobacco_use_details: null,
-  home_oxygen_and_cpap_use: null,
-  nasal_breathing_and_claustrophobia: null,
-  neck_size_inches: null,
+  lifestyle_factors_summary: { type: "string", required: false }, // quick mode summary
+  caffeine_and_alcohol_use: { type: "string", required: false },
+  tobacco_use_details: { type: "string", required: false },
+  home_oxygen_and_cpap_use: { type: "string", required: false },
+  nasal_breathing_and_claustrophobia: { type: "string", required: false },
+  neck_size_inches: { type: "string", required: false },
 
   // Medical history
-  medical_history_summary: null,
-  cardiac_respiratory_endocrine_history: null,
-  neurologic_mental_ent_history: null,
-  other_medical_conditions: null,
-  family_history_summary: null,
-  surgical_history: null,
+  medical_history_summary: { type: "string", required: false }, // quick mode summary
+  cardiac_respiratory_endocrine_history: { type: "string", required: false },
+  neurologic_mental_ent_history: { type: "string", required: false },
+  other_medical_conditions: { type: "string", required: false },
+  family_history_summary: { type: "string", required: false },
+  surgical_history: { type: "string", required: false },
 
   // Medications
-  medications_list: null,
+  medications_list: { type: "string", required: false },
 
   // Symptoms / ROS
-  sleep_symptoms_summary: null,
-  general_review_of_systems_summary: null,
+  sleep_symptoms_summary: { type: "string", required: false },
+  general_review_of_systems_summary: { type: "string", required: false },
 
   // Epworth
-  epworth_details: null,
-  epworth_total_score: null
+  epworth_details: { type: "string", required: false },
+  epworth_total_score: { type: "string", required: false }
 };
 
-export function buildHumanSummary(data) {
-  const d = data || {};
-  return `
-Sleep Intake Summary
+// Optional: helper to validate a packet object against this schema
+function validatePacket(packet) {
+  const errors = [];
 
-Patient:
-- Name: ${d.patient_full_name || "N/A"}
-- Date of Birth: ${d.patient_date_of_birth || "N/A"}
-- Address: ${d.patient_address || "N/A"}
-- Phone(s): ${d.patient_contact_phone || "N/A"}
-- Email: ${d.patient_contact_email || "N/A"}
-- Emergency Contact: ${d.emergency_contact || "N/A"}
+  for (const [field, rules] of Object.entries(packetSchema)) {
+    const value = packet[field];
 
-Physicians:
-- Referring Physician: ${d.referring_physician || "N/A"}
-- Primary Physician: ${d.primary_physician || "N/A"}
+    if (rules.required && (value === undefined || value === null || value === "")) {
+      errors.push(`Missing required field: ${field}`);
+      continue;
+    }
 
-Sleep History:
-- Primary Sleep Complaint: ${d.primary_sleep_complaint || "N/A"}
-- Onset of Problem: ${d.sleep_problem_onset || "N/A"}
-- Previous Sleep Studies/Treatments: ${d.previous_sleep_studies_or_treatments || "N/A"}
-- Additional Comments: ${d.additional_sleep_comments || "N/A"}
+    if (value !== undefined && value !== null && typeof value !== rules.type) {
+      errors.push(`Invalid type for field ${field}: expected ${rules.type}, got ${typeof value}`);
+    }
+  }
 
-Sleep Habits:
-- Sleep Habits Summary: ${d.sleep_habits_summary || "N/A"}
-- Workday Schedule: ${d.usual_bedtime_workdays || "N/A"}
-- Days Off Schedule: ${d.usual_bedtime_days_off || "N/A"}
-- Sleep Latency/Awakenings: ${d.sleep_latency_and_awakenings || "N/A"}
-- Work Shift Type: ${d.work_shift_type || "N/A"}
-
-Lifestyle:
-- Lifestyle Summary: ${d.lifestyle_factors_summary || "N/A"}
-- Caffeine/Alcohol Use: ${d.caffeine_and_alcohol_use || "N/A"}
-- Tobacco Use: ${d.tobacco_use_details || "N/A"}
-- Home Oxygen/CPAP Use: ${d.home_oxygen_and_cpap_use || "N/A"}
-- Nasal Breathing/Claustrophobia: ${d.nasal_breathing_and_claustrophobia || "N/A"}
-- Neck Size (inches): ${d.neck_size_inches || "N/A"}
-
-Medical History:
-- Overall Medical History Summary: ${d.medical_history_summary || "N/A"}
-- Cardiac/Respiratory/Endocrine: ${d.cardiac_respiratory_endocrine_history || "N/A"}
-- Neurologic/Mental/ENT: ${d.neurologic_mental_ent_history || "N/A"}
-- Other Medical Conditions: ${d.other_medical_conditions || "N/A"}
-- Family History: ${d.family_history_summary || "N/A"}
-- Surgical History: ${d.surgical_history || "N/A"}
-
-Medications:
-- Medications List: ${d.medications_list || "N/A"}
-
-Symptoms / Review of Systems:
-- Sleep Symptoms: ${d.sleep_symptoms_summary || "N/A"}
-- General Review of Systems: ${d.general_review_of_systems_summary || "N/A"}
-
-Epworth:
-- Epworth Details: ${d.epworth_details || "N/A"}
-- Epworth Total Score: ${d.epworth_total_score || "N/A"}
-
-HIPAA / Consents:
-- HIPAA Consent Acknowledgment: ${d.hipaa_consent_acknowledgment || "N/A"}
-`.trim();
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 }
+
+module.exports = {
+  packetSchema,
+  validatePacket
+};
